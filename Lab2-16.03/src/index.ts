@@ -47,15 +47,18 @@ app.get("/note/:id", function (req: Request, res: Response) {
 
 app.post("/note", function (req: Request, res: Response) {
  
-    var counter = 1;
-    for (var i = 0; i < notatka.length; i++) {
-      counter++;
-    }
+    // var counter = 1;
+    // for (var i = 0; i < notatka.length; i++) {
+    //   counter++;
+    // }
     const note = req.body;
-    note.id = counter;
+    const date = new Date()
+    date.toISOString();
+    note.date = date
+    note.id = Date.now().toString()
     notatka.push(note);
     //res.send(note.id)
-    res.send(note);
+    res.status(200).send(note.id);
   
 });
 
