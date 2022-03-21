@@ -33,24 +33,33 @@ let notatka: Note[] = [
 ];
 
 app.get("/note/:id", function (req: Request, res: Response) {
-  
-    var ID = req.params.id;
-    const IDnumber = +ID;
+  const title = req.body.title;
+  const content = req.body.content;
 
-    for (const item of notatka) {
-      if (item.id == IDnumber) {
-        res.status(200).send(item);
-      }
+  var ID = req.params.id;
+  const IDnumber = +ID;
+
+  for (const item of notatka) {
+    if (item.id == IDnumber && ID != null) {
+      res.status(200).send(item);
+    } else {
+      res.status(404).send("Nie ma notatki z takim idkiem")
     }
- 
+  }
+
 });
 
 app.post("/note", function (req: Request, res: Response) {
- 
-    // var counter = 1;
-    // for (var i = 0; i < notatka.length; i++) {
-    //   counter++;
-    // }
+
+  // var counter = 1;
+  // for (var i = 0; i < notatka.length; i++) {
+  //   counter++;
+  // }
+  const title = req.body.title;
+  const content = req.body.content;
+  if (title == null && content == null) {
+    res.status(400).send("błędne dane notatki, uzupełnij tytuł i content");
+  } else {
     const note = req.body;
     const date = new Date()
     date.toISOString();
@@ -59,7 +68,9 @@ app.post("/note", function (req: Request, res: Response) {
     notatka.push(note);
     //res.send(note.id)
     res.status(200).send(note.id);
-  
+  }
+
+
 });
 
 app.delete("/note/:id", (req, res) => {
@@ -78,30 +89,35 @@ app.put("/note/:id", (req, res) => {
   const { title, content, createDate, tags } = req.body;
 
   const note = notatka.find((note) => note.id === ID);
-
-  function validateToken(note: any) {
-    return note;
+  if (note == null) {
+    res.status(404).send("nie odnaleziono notatki")
+  }else{
+    function validateToken(note: any) {
+      return note;
+    }
+  
+    validateToken(note as any);
+  
+    if (title) {
+      note!.title = title;
+    }
+  
+    if (content) {
+      note!.content = content;
+    }
+  
+    if (createDate) {
+      note!.createDate = createDate;
+    }
+  
+    if (tags) {
+      note!.tags = tags;
+    }
+  
+    res.send(note);
   }
 
-  validateToken(note as any);
 
-  if (title) {
-    note!.title = title;
-  }
-
-  if (content) {
-    note!.content = content;
-  }
-
-  if (createDate) {
-    note!.createDate = createDate;
-  }
-
-  if (tags) {
-    note!.tags = tags;
-  }
-
-  res.send(note);
 });
 
 app.listen(3000);
