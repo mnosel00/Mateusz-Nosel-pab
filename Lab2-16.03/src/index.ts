@@ -128,14 +128,18 @@ app.post("/note", function (req: Request, res: Response) {
       tags: req.body.tags,
       id: Date.now(),
     };
+    let tag : Tag={
+      id:Date.now(),
+      name: req.body.tags
+    }
     var idToString = note.id!.toString();
 
     const tagFindId = tags.find((tagId) => tagId.id === req.body.tags.id)
-    if (!tagFindId) {
+    if (!tagFindId) {}
 
-      tags.push({ name: req.body.tags })
+      tags.push(tag)
 
-    }
+    
 
     notatka.push(note);
     //res.send(note.id)
