@@ -7,31 +7,102 @@ const app = express();
 
 app.use(express.json());
 
+interface Tag {
+  id?: number;
+  name: string;
+}
+
 interface Note {
   title: string;
   content: string;
   createDate?: string;
-  tags?: any[];
+  tags?: Tag[];
   id?: number;
 }
 
+let tags: Tag[] = [
+  {
+    id: 1,
+    name: "a",
+  },
+  {
+    id: 2,
+    name: "b",
+  },
+];
 let notatka: Note[] = [
   {
     title: "a",
     content: "a",
     createDate: "16-02-2022",
-    tags: ["a", "b", "c"],
+
+    tags: [{ id: 1, name: "a" }],
     id: 1,
   },
   {
     title: "b",
     content: "b",
     createDate: "17-02-2022",
-    tags: ["d", "e", "f"],
+    tags: [{ id: 2, name: "b" }],
     id: 2,
   },
 ];
+//////////////////////////////// API do Tag
+app.get("/tags", function (req, res) {
+  res.send(tags);
+});
 
+app.post("/tag", function (req, res) {
+  if (req.body.name) {
+    const name = req.body.name.toLowerCase();
+    var a = name.toLowerCase();
+
+    const tagFind = tags.find((name) => name.name === a);
+
+    if (tagFind) {
+      res.status(404).send("Notatka o taiej nazwie już istnieje");
+    } else {
+      let tag: Tag = {
+        name: req.body.name,
+        id: Date.now(),
+      };
+
+      tags.push(tag);
+      res.status(200).send(tag);
+    }
+  } else {
+    res.status(404).send("nie utworzono ");
+  }
+
+  //}
+});
+
+app.delete("/tag/:id", function (req, res) {
+  const { id } = req.params;
+  const ID = +id;
+  tags = tags.filter((tag) => tag.id !== ID); //true trzyma w tablicy
+  res.send("poszedł w piach");
+});
+
+app.put("/tag/:id", function (req, res) {
+  const { id } = req.params;
+  const ID = +id;
+  const name = req.body.name;
+
+  name.toLowerCase();
+
+  const tag = tags.find((note) => note.id === ID);
+
+  if (name) {
+    tag!.name = name;
+  }
+  res.send(tag);
+});
+
+//////////////////////////////// API do Note
+app.get("/notes", function (req, res) {
+  res.send(notatka);
+});
 app.get("/note/:id", function (req: Request, res: Response) {
   const title = req.body.title;
   const content = req.body.content;
@@ -43,34 +114,42 @@ app.get("/note/:id", function (req: Request, res: Response) {
     if (item.id == IDnumber && ID != null) {
       res.status(200).send(item);
     } else {
-      res.status(404).send("Nie ma notatki z takim idkiem")
+      res.status(404).send("Nie ma notatki z takim idkiem");
     }
   }
-
 });
 
 app.post("/note", function (req: Request, res: Response) {
+  if (req.body.title && req.body.content) {
+    let note: Note = {
+      title: req.body.title,
+      content: req.body.content,
+      createDate: new Date().toISOString(),
+      tags: req.body.tags,
+      id: Date.now(),
+    };
+    var idToString = note.id!.toString();
 
-  // var counter = 1;
-  // for (var i = 0; i < notatka.length; i++) {
-  //   counter++;
-  // }
-  const title = req.body.title;
-  const content = req.body.content;
-  if (title == null && content == null) {
-    res.status(400).send("błędne dane notatki, uzupełnij tytuł i content");
-  } else {
-    const note = req.body;
-    const date = new Date()
-    date.toISOString();
-    note.date = date
-    note.id = Date.now().toString()
+    const tagFindId = tags.find((tagId) => tagId.id === req.body.tags.id)
+    if (!tagFindId) {
+
+      tags.push({ name: req.body.tags })
+
+    }
+
     notatka.push(note);
     //res.send(note.id)
-    res.status(200).send(note.id);
+    res.status(200).send(idToString);
+  } else {
+    res.status(404).send("nie utworzono i elo");
   }
 
+  // const tagFindId = tags.find((tagId) => tagId.id===req.body.tags.id)
+  // if (!tagFindId) {
 
+  //   tags.push({name:tagName})
+
+  // }
 });
 
 app.delete("/note/:id", (req, res) => {
@@ -90,34 +169,32 @@ app.put("/note/:id", (req, res) => {
 
   const note = notatka.find((note) => note.id === ID);
   if (note == null) {
-    res.status(404).send("nie odnaleziono notatki")
-  }else{
+    res.status(404).send("nie odnaleziono notatki");
+  } else {
     function validateToken(note: any) {
       return note;
     }
-  
+
     validateToken(note as any);
-  
+
     if (title) {
       note!.title = title;
     }
-  
+
     if (content) {
       note!.content = content;
     }
-  
+
     if (createDate) {
       note!.createDate = createDate;
     }
-  
+
     if (tags) {
       note!.tags = tags;
     }
-  
+
     res.send(note);
   }
-
-
 });
 
 app.listen(3000);
