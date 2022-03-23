@@ -129,31 +129,33 @@ app.post("/note", function (req: Request, res: Response) {
       id: Date.now(),
     };
     let tag : Tag={
-      id:Date.now(),
-      name: req.body.tags
+      name: req.body.tags,
+      id:Date.now()
+      
     }
     var idToString = note.id!.toString();
 
-    const tagFindId = tags.find((tagId) => tagId.id === req.body.tags.id)
-    if (!tagFindId) {}
+    const name = tag.name.toLowerCase();
+    var a = name.toLowerCase();
+    const tagFind = tags.find((name) => name.name === a);
 
-      tags.push(tag)
-
-    
+    if (tagFind) {
+      res.status(404).send("Notatka o taiej nazwie już istnieje");
+    }else{
+      const tagFindId = tags.find((tagId) => tagId.id === req.body.tags.id)
+      if (!tagFindId) {
+        tags.push(tag)
+      }
+    }
 
     notatka.push(note);
-    //res.send(note.id)
+    
     res.status(200).send(idToString);
   } else {
     res.status(404).send("nie utworzono i elo");
   }
 
-  // const tagFindId = tags.find((tagId) => tagId.id===req.body.tags.id)
-  // if (!tagFindId) {
 
-  //   tags.push({name:tagName})
-
-  // }
 });
 
 app.delete("/note/:id", (req, res) => {
