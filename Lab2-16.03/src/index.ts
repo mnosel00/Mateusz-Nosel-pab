@@ -1,7 +1,35 @@
 import { notStrictEqual } from "assert";
 import express from "express";
 import { Request, Response } from "express";
+import { write } from "fs";
 import { title } from "process";
+
+
+
+function Read(): void
+{
+
+  var fs = require("fs");
+
+  var data = fs.readFileSync('./data/notatka.json');
+  
+  var words = JSON.parse(data);
+  
+  console.log(words)
+
+}
+
+
+function Write(): void
+{
+
+    var fs = require("fs"); 
+
+
+    fs.writeFileSync('./data/notatka.json', JSON.stringify(notatka));
+
+}
+
 
 const app = express();
 
@@ -31,21 +59,7 @@ let tags: Tag[] = [
   },
 ];
 let notatka: Note[] = [
-  {
-    title: "a",
-    content: "a",
-    createDate: "16-02-2022",
-
-    tags: [{ id: 1, name: "a" }],
-    id: 1,
-  },
-  {
-    title: "b",
-    content: "b",
-    createDate: "17-02-2022",
-    tags: [{ id: 2, name: "b" }],
-    id: 2,
-  },
+  
 ];
 //////////////////////////////// API do Tag
 app.get("/tags", function (req, res) {
@@ -101,6 +115,7 @@ app.put("/tag/:id", function (req, res) {
 
 //////////////////////////////// API do Note
 app.get("/notes", function (req, res) {
+  Read();
   res.send(notatka);
 });
 app.get("/note/:id", function (req: Request, res: Response) {
@@ -120,7 +135,10 @@ app.get("/note/:id", function (req: Request, res: Response) {
 });
 
 app.post("/note", function (req: Request, res: Response) {
+  Read();
   if (req.body.title && req.body.content) {
+
+
     let note: Note = {
       title: req.body.title,
       content: req.body.content,
@@ -128,46 +146,67 @@ app.post("/note", function (req: Request, res: Response) {
       tags: req.body.tags,
       id: Date.now(),
     };
+
+
     let tag : Tag={
       name: req.body.tags,
       id:Date.now()
       
-    }
+    };
+
     var idToString = note.id!.toString();
 
     const name = tag.name.toLowerCase();
     var a = name.toLowerCase();
     const tagFind = tags.find((name) => name.name === a);
 
-    if (tagFind) {
+    if (tagFind) 
+    {
+
       res.status(404).send("Notatka o taiej nazwie już istnieje");
-    }else{
+
+    }
+    else
+    {
+
       const tagFindId = tags.find((tagId) => tagId.id === req.body.tags.id)
-      if (!tagFindId) {
+      if (!tagFindId) 
+      {
+
         tags.push(tag)
+
       }
+
     }
 
     notatka.push(note);
-    
+    Write();
     res.status(200).send(idToString);
-  } else {
+
+
+  } 
+  else 
+  {
+
     res.status(404).send("nie utworzono i elo");
+
   }
 
 
 });
 
 app.delete("/note/:id", (req, res) => {
+  Read();
   const { id } = req.params;
   const ID = +id;
 
   notatka = notatka.filter((note) => note.id !== ID); //true trzyma w tablicy
-
+  Write();
   res.send("poszedł w piach");
 });
 
 app.put("/note/:id", (req, res) => {
+  Read()
   const { id } = req.params;
   const ID = +id;
 
@@ -200,6 +239,7 @@ app.put("/note/:id", (req, res) => {
     }
 
     res.send(note);
+    Write()
   }
 });
 
