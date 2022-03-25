@@ -1,32 +1,30 @@
 import { notStrictEqual } from "assert";
 import express from "express";
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import { write } from "fs";
 import { title } from "process";
 
 
 
-function Read(): void
-{
+function Read(): void {
 
   var fs = require("fs");
 
   var data = fs.readFileSync('./data/notatka.json');
-  
+
   var words = JSON.parse(data);
-  
+
   console.log(words)
 
 }
 
 
-function Write(): void
-{
+function Write(): void {
 
-    var fs = require("fs"); 
+  var fs = require("fs");
 
 
-    fs.writeFileSync('./data/notatka.json', JSON.stringify(notatka));
+  fs.writeFileSync('./data/notatka.json', JSON.stringify(notatka));
 
 }
 
@@ -49,17 +47,10 @@ interface Note {
 }
 
 let tags: Tag[] = [
-  {
-    id: 1,
-    name: "a",
-  },
-  {
-    id: 2,
-    name: "b",
-  },
+
 ];
 let notatka: Note[] = [
-  
+
 ];
 //////////////////////////////// API do Tag
 app.get("/tags", function (req, res) {
@@ -148,45 +139,55 @@ app.post("/note", function (req: Request, res: Response) {
     };
 
 
-    let tag : Tag={
-      name: req.body.tags,
-      id:Date.now()
+    let tag: Tag = {
+      id: Date.now(),
+      name: req.body.tags
       
+
     };
 
     var idToString = note.id!.toString();
-
-    const name = tag.name.toLowerCase();
-    var a = name.toLowerCase();
-    const tagFind = tags.find((name) => name.name === a);
-
-    if (tagFind) 
-    {
-
-      res.status(404).send("Notatka o taiej nazwie już istnieje");
-
-    }
-    else
-    {
-
-      const tagFindId = tags.find((tagId) => tagId.id === req.body.tags.id)
-      if (!tagFindId) 
-      {
-
-        tags.push(tag)
-
+    
+    if(tag.name===undefined){
+      tag = {
+        id :Date.now(),
+        name: "Default"
       }
+      
+    }
+    
+    
+    const name = tag.name.toString().toLowerCase();
+    let tagNameToLowerCase = name.toLowerCase();
+
+
+    const tagFind = tags.find((x) => x.name === tagNameToLowerCase);
+
+    if (tagFind||tagNameToLowerCase==="default") {
+      notatka.push(note);
+      Write();
+     // res.status(404).send("Notatka o taiej nazwie już istnieje");
+
+    }
+    else {
+
+
+
+      tags.push(tag)
+      notatka.push(note);
+      
+      Write();
+
+
 
     }
 
-    notatka.push(note);
-    Write();
+
     res.status(200).send(idToString);
 
 
-  } 
-  else 
-  {
+  }
+  else {
 
     res.status(404).send("nie utworzono i elo");
 
