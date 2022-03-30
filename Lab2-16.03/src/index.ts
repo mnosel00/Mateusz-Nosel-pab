@@ -4,30 +4,25 @@ import e, { Request, Response } from "express";
 import { write } from "fs";
 import { title } from "process";
 
-
-
 function Read(): void {
-
   var fs = require("fs");
 
-  var data = fs.readFileSync('./data/notatka.json');
+  var data = fs.readFileSync("./data/notatka.json");
 
   var words = JSON.parse(data);
 
-  console.log(words)
-
+  console.log(words);
 }
-
 
 function Write(): void {
-
   var fs = require("fs");
 
-
-  fs.writeFileSync('./data/notatka.json', JSON.stringify(notatka));
-
+  fs.writeFileSync("./data/notatka.json", JSON.stringify(notatka));
 }
 
+const jwt = require('jsonwebtoken')
+const dotenv = require('dotenv')
+dotenv.config();
 
 const app = express();
 
@@ -44,14 +39,51 @@ interface Note {
   createDate?: string;
   tags?: Tag[];
   id?: number;
+  //user?: Login[];
 }
 
-let tags: Tag[] = [
+interface Login {
+  login: string;
+  password: string;
+  id?: number;
+}
 
-];
-let notatka: Note[] = [
+let tags: Tag[] = [];
+let notatka: Note[] = [];
 
+let user: Login[] = [
+ 
+  
 ];
+app.post("/login", function (req, res) {
+
+  
+  
+  
+
+  const login = req.body.login;
+  const password = req.body.password;
+
+  let users: Login ={
+    login:login,
+    password:password,
+    id:Date.now()
+  }
+
+  const token = jwt.sign(user, secret)
+  user.push(users)
+  res.send(token);
+  // const authData = req.headers.authorization;
+
+  // const token = authData?.split(" ")[1] ?? "";
+
+  // const payload = jwt.verify(token, secret);
+});
+
+
+
+
+
 //////////////////////////////// API do Tag
 app.get("/tags", function (req, res) {
   res.send(tags);
@@ -128,8 +160,6 @@ app.get("/note/:id", function (req: Request, res: Response) {
 app.post("/note", function (req: Request, res: Response) {
   Read();
   if (req.body.title && req.body.content) {
-
-
     let note: Note = {
       title: req.body.title,
       content: req.body.content,
@@ -138,62 +168,40 @@ app.post("/note", function (req: Request, res: Response) {
       id: Date.now(),
     };
 
-
     let tag: Tag = {
       id: Date.now(),
-      name: req.body.tags
-      
-
+      name: req.body.tags,
     };
 
     var idToString = note.id!.toString();
-    
-    if(tag.name===undefined){
+
+    if (tag.name === undefined) {
       tag = {
-        id :Date.now(),
-        name: "Default"
-      }
-      
+        id: Date.now(),
+        name: "Default",
+      };
     }
-    
-    
+
     const name = tag.name.toString().toLowerCase();
     let tagNameToLowerCase = name.toLowerCase();
 
-
     const tagFind = tags.find((x) => x.name === tagNameToLowerCase);
 
-    if (tagFind||tagNameToLowerCase==="default") {
+    if (tagFind || tagNameToLowerCase === "default") {
       notatka.push(note);
       Write();
-     // res.status(404).send("Notatka o taiej nazwie już istnieje");
-
-    }
-    else {
-
-
-
-      tags.push(tag)
+      // res.status(404).send("Notatka o taiej nazwie już istnieje");
+    } else {
+      tags.push(tag);
       notatka.push(note);
-      
+
       Write();
-
-
-
     }
-
 
     res.status(200).send(idToString);
-
-
-  }
-  else {
-
+  } else {
     res.status(404).send("nie utworzono i elo");
-
   }
-
-
 });
 
 app.delete("/note/:id", (req, res) => {
@@ -207,7 +215,7 @@ app.delete("/note/:id", (req, res) => {
 });
 
 app.put("/note/:id", (req, res) => {
-  Read()
+  Read();
   const { id } = req.params;
   const ID = +id;
 
@@ -240,7 +248,7 @@ app.put("/note/:id", (req, res) => {
     }
 
     res.send(note);
-    Write()
+    Write();
   }
 });
 
