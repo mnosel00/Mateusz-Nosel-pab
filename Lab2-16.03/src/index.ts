@@ -20,8 +20,8 @@ function Write(): void {
   fs.writeFileSync("./data/notatka.json", JSON.stringify(notatka));
 }
 
-const jwt = require('jsonwebtoken')
-const dotenv = require('dotenv')
+const jwt = require("jsonwebtoken");
+const dotenv = require("dotenv");
 dotenv.config();
 
 const app = express();
@@ -51,27 +51,32 @@ interface Login {
 let tags: Tag[] = [];
 let notatka: Note[] = [];
 
-let user: Login[] = [
- 
-  
-];
+let user: Login[] = [];
+
+function protecion(req:any, res:any, next:any) {
+  const bearerHeader = req.headers["authorization"];
+  if (typeof bearerHeader !== "undefined") {
+    const bearer = bearerHeader.split(" ");
+    const bearerToken = bearer[1];
+    req.token = bearerToken;
+    next();
+  } else {
+    res.sendStatus(403);
+  }
+}
+
 app.post("/login", function (req, res) {
-
-  
-  
-  
-
   const login = req.body.login;
   const password = req.body.password;
 
-  let users: Login ={
-    login:login,
-    password:password,
-    id:Date.now()
-  }
+  let users: Login = {
+    login: login,
+    password: password,
+    id: Date.now(),
+  };
 
-  const token = jwt.sign(user, secret)
-  user.push(users)
+  const token = jwt.sign({ users }, "secret");
+  user.push(users);
   res.send(token);
   // const authData = req.headers.authorization;
 
@@ -79,10 +84,6 @@ app.post("/login", function (req, res) {
 
   // const payload = jwt.verify(token, secret);
 });
-
-
-
-
 
 //////////////////////////////// API do Tag
 app.get("/tags", function (req, res) {
@@ -137,9 +138,16 @@ app.put("/tag/:id", function (req, res) {
 });
 
 //////////////////////////////// API do Note
-app.get("/notes", function (req, res) {
-  Read();
-  res.send(notatka);
+app.get("/notes", protecion, function (req, res) {
+  jwt.verify(req.token,'secret',function(err:any, data:any) {
+    if (err) {
+      res.sendStatus(403);
+    }else{
+      Read();
+      res.send(notatka)
+    }
+  })
+ ;
 });
 app.get("/note/:id", function (req: Request, res: Response) {
   const title = req.body.title;
