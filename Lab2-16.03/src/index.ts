@@ -43,11 +43,11 @@ let user: Login[] = [
     id: Date.now(),
   },
 ];
-function Read(): void {
+async function Read(): Promise<void> {
   var fs = require("fs");
 
-  var data = fs.readFileSync("./data/notatka.json");
-  var data2 = fs.readFileSync("./data/tag.json");
+  var data = await fs.readFileSync("./data/notatka.json");
+  var data2 = await fs.readFileSync("./data/tag.json");
 
   notatka = JSON.parse(data);
   tags = JSON.parse(data2)
@@ -56,11 +56,11 @@ function Read(): void {
   //console.log(tags)
 }
 
-function Write(): void {
+async function Write(): Promise<void> {
   var fs = require("fs");
 
-  fs.writeFileSync("./data/notatka.json", JSON.stringify(notatka));
-  fs.writeFileSync("./data/tag.json", JSON.stringify(tags));
+ await  fs.writeFileSync("./data/notatka.json", JSON.stringify(notatka));
+  await fs.writeFileSync("./data/tag.json", JSON.stringify(tags));
 }
 function protecion(req: any, res: any, next: any) {
   const bearerHeader = req.headers["authorization"];
