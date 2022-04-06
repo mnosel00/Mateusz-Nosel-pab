@@ -68,7 +68,7 @@ function protecion(req: any, res: any, next: any) {
     const bearer = bearerHeader.split(" ");
     const bearerToken = bearer[1];
     req.token = bearerToken;
-    next();
+     next();
   } else {
     res.sendStatus(403);
   }
@@ -102,8 +102,8 @@ app.get("/tags", function (req, res) {
   res.send(tags);
 });
 
-app.post("/tag", function (req, res) {
-  Read();
+app.post("/tag", async function (req, res) {
+  await Read();
   if (req.body.name) {
     const name = req.body.name.toLowerCase();
     var a = name.toLowerCase();
@@ -120,7 +120,7 @@ app.post("/tag", function (req, res) {
 
       tags.push(tag);
       res.status(200).send(tag);
-      Write();
+      await Write();
     }
   } else {
     res.status(404).send("nie utworzono ");
@@ -129,17 +129,17 @@ app.post("/tag", function (req, res) {
   //}
 });
 
-app.delete("/tag/:id", function (req, res) {
-  Read();
+app.delete("/tag/:id", async function (req, res) {
+  await Read();
   const { id } = req.params;
   const ID = +id;
   tags = tags.filter((tag) => tag.id !== ID); //true trzyma w tablicy
-  Write();
+  await Write();
   res.send("poszedł w piach");
 });
 
-app.put("/tag/:id", function (req, res) {
-  Read();
+app.put("/tag/:id", async function (req, res) {
+  await Read();
   const { id } = req.params;
   const ID = +id;
   const name = req.body.name;
@@ -152,33 +152,37 @@ app.put("/tag/:id", function (req, res) {
     tag!.name = name;
   }
   res.send(tag);
-  Write();
+  await Write();
 });
 
 //////////////////////////////// API do Note
-app.get("/notes", function (req, res) {
-  Read();
+app.get("/notes", async function (req, res) {
+  await Read();
   res.send(notatka);
 });
-app.get("/note/:id", function (req: Request, res: Response) {
-  Read();
-  const title = req.body.title;
-  const content = req.body.content;
+app.get("/note/:id", async function (req: Request, res: Response) {
+  await Read();
+  const note = notatka.find((note) => note.id ===parseInt(req.params.id))
 
   var ID = req.params.id;
   const IDnumber = +ID;
 
-  for (const item of notatka) {
-    if (item.id == IDnumber && ID != null) {
-      res.status(200).send(item);
-    } else {
-      res.status(404).send("Nie ma notatki z takim idkiem");
-    }
+  // for (const item of ) {
+  //   if (item.id == IDnumber && ID != null) {
+  //     res.status(200).send(item);
+  //   } else {
+  //     res.status(404).send("Nie ma notatki z takim idkiem");
+  //   }
+  // }
+  if(note){
+    res.status(200).send(note);
+  }else{
+    res.status(404).send("Nie ma notatki z takim idkiem");
   }
 });
 
-app.post("/note", function (req: Request, res: Response) {
-  Read();
+app.post("/note", async function (req: Request, res: Response) {
+  await Read();
   if (req.body.title && req.body.content) {
     let note: Note = {
       title: req.body.title,
@@ -209,13 +213,13 @@ app.post("/note", function (req: Request, res: Response) {
 
     if (tagFind || tagNameToLowerCase === "default") {
       notatka.push(note);
-      Write();
+      await Write();
       // res.status(404).send("Notatka o taiej nazwie już istnieje");
     } else {
       tags.push(tag);
       notatka.push(note);
 
-      Write();
+      await Write();
     }
 
     res.status(200).send(idToString);
@@ -224,18 +228,18 @@ app.post("/note", function (req: Request, res: Response) {
   }
 });
 
-app.delete("/note/:id", (req, res) => {
-  Read();
+app.delete("/note/:id", async (req, res) => {
+  await Read();
   const { id } = req.params;
   const ID = +id;
 
   notatka = notatka.filter((note) => note.id !== ID); //true trzyma w tablicy
-  Write();
+  await Write();
   res.send("poszedł w piach");
 });
 
-app.put("/note/:id", (req, res) => {
-  Read();
+app.put("/note/:id",async (req, res) => {
+  await Read();
   const { id } = req.params;
   const ID = +id;
 
@@ -268,7 +272,7 @@ app.put("/note/:id", (req, res) => {
     }
 
     res.send(note);
-    Write();
+    await Write();
   }
 });
 
