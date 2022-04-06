@@ -47,16 +47,20 @@ function Read(): void {
   var fs = require("fs");
 
   var data = fs.readFileSync("./data/notatka.json");
+  var data2 = fs.readFileSync("./data/tag.json");
 
   notatka = JSON.parse(data);
+  tags = JSON.parse(data2)
 
-  console.log(notatka);
+  //console.log(notatka);
+  //console.log(tags)
 }
 
 function Write(): void {
   var fs = require("fs");
 
   fs.writeFileSync("./data/notatka.json", JSON.stringify(notatka));
+  fs.writeFileSync("./data/tag.json", JSON.stringify(tags));
 }
 function protecion(req: any, res: any, next: any) {
   const bearerHeader = req.headers["authorization"];
@@ -94,10 +98,12 @@ app.get("/users", function (req, res) {
 
 //////////////////////////////// API do Tag
 app.get("/tags", function (req, res) {
+  Read();
   res.send(tags);
 });
 
 app.post("/tag", function (req, res) {
+  Read();
   if (req.body.name) {
     const name = req.body.name.toLowerCase();
     var a = name.toLowerCase();
@@ -114,6 +120,7 @@ app.post("/tag", function (req, res) {
 
       tags.push(tag);
       res.status(200).send(tag);
+      Write();
     }
   } else {
     res.status(404).send("nie utworzono ");
@@ -123,13 +130,16 @@ app.post("/tag", function (req, res) {
 });
 
 app.delete("/tag/:id", function (req, res) {
+  Read();
   const { id } = req.params;
   const ID = +id;
   tags = tags.filter((tag) => tag.id !== ID); //true trzyma w tablicy
+  Write();
   res.send("poszedł w piach");
 });
 
 app.put("/tag/:id", function (req, res) {
+  Read();
   const { id } = req.params;
   const ID = +id;
   const name = req.body.name;
@@ -142,6 +152,7 @@ app.put("/tag/:id", function (req, res) {
     tag!.name = name;
   }
   res.send(tag);
+  Write();
 });
 
 //////////////////////////////// API do Note
@@ -150,6 +161,7 @@ app.get("/notes", function (req, res) {
   res.send(notatka);
 });
 app.get("/note/:id", function (req: Request, res: Response) {
+  Read();
   const title = req.body.title;
   const content = req.body.content;
 
