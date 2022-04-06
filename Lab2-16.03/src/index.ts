@@ -4,25 +4,9 @@ import e, { Request, Response } from "express";
 import { write } from "fs";
 import { title } from "process";
 
-function Read(): void {
-  var fs = require("fs");
 
-  var data = fs.readFileSync("./data/notatka.json");
-
-  var words = JSON.parse(data);
-
-  console.log(words);
-}
-
-function Write(): void {
-  var fs = require("fs");
-
-  fs.writeFileSync("./data/notatka.json", JSON.stringify(notatka));
-}
 
 const jwt = require("jsonwebtoken");
-const dotenv = require("dotenv");
-dotenv.config();
 
 const app = express();
 
@@ -45,15 +29,36 @@ interface Note {
 interface Login {
   login: string;
   password: string;
+
   id?: number;
 }
 
 let tags: Tag[] = [];
 let notatka: Note[] = [];
 
-let user: Login[] = [];
+let user: Login[] = [
+  {
+    login: "a",
+    password: "b",
+    id: Date.now(),
+  },
+];
+function Read(): void {
+  var fs = require("fs");
 
-function protecion(req:any, res:any, next:any) {
+  var data = fs.readFileSync("./data/notatka.json");
+
+  notatka = JSON.parse(data);
+
+  console.log(notatka);
+}
+
+function Write(): void {
+  var fs = require("fs");
+
+  fs.writeFileSync("./data/notatka.json", JSON.stringify(notatka));
+}
+function protecion(req: any, res: any, next: any) {
   const bearerHeader = req.headers["authorization"];
   if (typeof bearerHeader !== "undefined") {
     const bearer = bearerHeader.split(" ");
@@ -72,18 +77,20 @@ app.post("/login", function (req, res) {
   let users: Login = {
     login: login,
     password: password,
+
     id: Date.now(),
   };
-
   const token = jwt.sign({ users }, "secret");
+
   user.push(users);
   res.send(token);
-  // const authData = req.headers.authorization;
-
-  // const token = authData?.split(" ")[1] ?? "";
-
-  // const payload = jwt.verify(token, secret);
 });
+
+
+app.get("/users", function (req, res) {
+  res.send(user);
+});
+
 
 //////////////////////////////// API do Tag
 app.get("/tags", function (req, res) {
@@ -138,16 +145,9 @@ app.put("/tag/:id", function (req, res) {
 });
 
 //////////////////////////////// API do Note
-app.get("/notes", protecion, function (req, res) {
-  jwt.verify(req.token,'secret',function(err:any, data:any) {
-    if (err) {
-      res.sendStatus(403);
-    }else{
-      Read();
-      res.send(notatka)
-    }
-  })
- ;
+app.get("/notes", function (req, res) {
+  Read();
+  res.send(notatka);
 });
 app.get("/note/:id", function (req: Request, res: Response) {
   const title = req.body.title;
