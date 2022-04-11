@@ -5,7 +5,7 @@ import { write } from "fs";
 import { title } from "process";
 
 
-
+require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
 const app = express();
@@ -36,12 +36,16 @@ interface Login {
 let tags: Tag[] = [];
 let notatka: Note[] = [];
 
-let user: Login[] = [
+let users: Login[] = [
   {
     login: "a",
-    password: "b",
-    id: Date.now(),
+    password: "1"
   },
+  {
+    login: "b",
+    password:"2"
+  }
+ 
 ];
 async function Read(): Promise<void> {
   var fs = require("fs");
@@ -62,38 +66,49 @@ async function Write(): Promise<void> {
  await  fs.writeFileSync("./data/notatka.json", JSON.stringify(notatka));
   await fs.writeFileSync("./data/tag.json", JSON.stringify(tags));
 }
-function protecion(req: any, res: any, next: any) {
-  const bearerHeader = req.headers["authorization"];
-  if (typeof bearerHeader !== "undefined") {
-    const bearer = bearerHeader.split(" ");
-    const bearerToken = bearer[1];
-    req.token = bearerToken;
-     next();
-  } else {
-    res.sendStatus(403);
-  }
-}
 
-app.post("/login", function (req, res) {
+
+
+app.get("/users",auth,function (req, res) {
+  
+  res.send(users.filter(x => x.login === req.body.login));
+});
+
+app.post("/login", async function (req, res) {
   const login = req.body.login;
   const password = req.body.password;
 
-  let users: Login = {
-    login: login,
-    password: password,
+  let user:Login = {
+    login:login,
+    password:password
+  }
 
-    id: Date.now(),
-  };
-  const token = jwt.sign({ users }, "secret");
-
-  user.push(users);
-  res.send(token);
+    const token = jwt.sign(user,process.env.JWT_KEY)
+    res.send({token:token});
+  
 });
 
+function auth(req:any,res:any,next:any) {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]
 
-app.get("/users", function (req, res) {
-  res.send(user);
-});
+  if (token==null) 
+  {
+    return res.sendStatus(401);
+  }
+
+  jwt.verify(token,process.env.JWT_KEY, (err:any,user:any) =>{
+    if(err)
+    {
+      return res.sendStatus(403)
+    }
+    req.user = user;
+    next();
+  })
+}
+
+
+
 
 
 //////////////////////////////// API do Tag
