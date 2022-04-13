@@ -15,6 +15,7 @@ app.use(express.json());
 interface Tag {
   id?: number;
   name: string;
+  user?: string;
 }
 
 interface Note {
@@ -23,7 +24,7 @@ interface Note {
   createDate?: string;
   tags?: Tag[];
   id?: number;
-  user?: Login[];
+  user?: string;
   //user?: Login[];
 }
 
@@ -40,7 +41,8 @@ let notatka: Note[] = [];
 let users: Login[] = [
   {
     login: "a",
-    password: "1"
+    password: "1",
+    
   },
   {
     login: "b",
@@ -70,9 +72,9 @@ async function Write(): Promise<void> {
 
 
 
-app.get("/users",auth,function (req, res) {
+app.get("/users",auth,function (req:any, res) {
   
-  res.send(users.filter(x => x.login === req.body.login));
+  res.send(users.filter(x => x.login === req.user.login));
 });
 
 app.post("/login", async function (req, res) {
@@ -81,7 +83,8 @@ app.post("/login", async function (req, res) {
 
   let user:Login = {
     login:login,
-    password:password
+    password:password,
+    id:Date.now()
   }
 
     const token = jwt.sign(user,process.env.JWT_KEY)
@@ -90,6 +93,7 @@ app.post("/login", async function (req, res) {
 });
 
 function auth(req:any,res:any,next:any) {
+  
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]
 
@@ -103,9 +107,12 @@ function auth(req:any,res:any,next:any) {
     {
       return res.sendStatus(403)
     }
+    
     req.user = user;
+  
     next();
   })
+
 }
 
 
@@ -118,7 +125,7 @@ app.get("/tags", function (req, res) {
   res.send(tags);
 });
 
-app.post("/tag", async function (req, res) {
+app.post("/tag",auth, async function (req:any, res) {
   await Read();
   if (req.body.name) {
     const name = req.body.name.toLowerCase();
@@ -132,6 +139,7 @@ app.post("/tag", async function (req, res) {
       let tag: Tag = {
         name: req.body.name,
         id: Date.now(),
+        user: req.user
       };
 
       tags.push(tag);
@@ -174,6 +182,9 @@ app.put("/tag/:id", async function (req, res) {
 //////////////////////////////// API do Note
 app.get("/notes", async function (req, res) {
   await Read();
+
+ // const usertoken = notatka.user
+
   res.send(notatka);
 });
 app.get("/note/:id", async function (req: Request, res: Response) {
@@ -183,13 +194,7 @@ app.get("/note/:id", async function (req: Request, res: Response) {
   var ID = req.params.id;
   const IDnumber = +ID;
 
-  // for (const item of ) {
-  //   if (item.id == IDnumber && ID != null) {
-  //     res.status(200).send(item);
-  //   } else {
-  //     res.status(404).send("Nie ma notatki z takim idkiem");
-  //   }
-  // }
+ 
   if(note){
     res.status(200).send(note);
   }else{
@@ -197,23 +202,17 @@ app.get("/note/:id", async function (req: Request, res: Response) {
   }
 });
 
-app.post("/note", auth,async function (req: Request, res: Response) {
+app.post("/note", auth,async function (req: any, res: Response) {
   await Read();
   if (req.body.title && req.body.content) {
 
-    let user : Login = {
-      login: req.body.login,
-      password: req.body.password
-    }
-
-    const token = jwt.sign(user, process.env.JWT_KEY)
 
     let note: Note = {
       title: req.body.title,
       content: req.body.content,
       createDate: new Date().toISOString(),
       tags: req.body.tags,
-      user: token,
+      user:req.user,
       id: Date.now(),
     };
 
