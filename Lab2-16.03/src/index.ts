@@ -88,6 +88,7 @@ app.post("/login", async function (req, res) {
   }
 
     const token = jwt.sign(user,process.env.JWT_KEY)
+    users.push(user)
     res.send({token:token});
   
 });
@@ -212,7 +213,7 @@ app.post("/note", auth,async function (req: any, res: Response) {
       content: req.body.content,
       createDate: new Date().toISOString(),
       tags: req.body.tags,
-      user:req.user,
+      user:req.user.login,
       id: Date.now(),
     };
 
