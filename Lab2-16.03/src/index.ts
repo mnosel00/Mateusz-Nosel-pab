@@ -23,14 +23,15 @@ interface Note {
   createDate?: string;
   tags?: Tag[];
   id?: number;
+  user?: Login[];
   //user?: Login[];
 }
 
 interface Login {
   login: string;
   password: string;
-
   id?: number;
+
 }
 
 let tags: Tag[] = [];
@@ -196,14 +197,23 @@ app.get("/note/:id", async function (req: Request, res: Response) {
   }
 });
 
-app.post("/note", async function (req: Request, res: Response) {
+app.post("/note", auth,async function (req: Request, res: Response) {
   await Read();
   if (req.body.title && req.body.content) {
+
+    let user : Login = {
+      login: req.body.login,
+      password: req.body.password
+    }
+
+    const token = jwt.sign(user, process.env.JWT_KEY)
+
     let note: Note = {
       title: req.body.title,
       content: req.body.content,
       createDate: new Date().toISOString(),
       tags: req.body.tags,
+      user: token,
       id: Date.now(),
     };
 
@@ -212,6 +222,7 @@ app.post("/note", async function (req: Request, res: Response) {
       name: req.body.tags,
     };
 
+ 
     var idToString = note.id!.toString();
 
     if (tag.name === undefined) {
@@ -229,7 +240,6 @@ app.post("/note", async function (req: Request, res: Response) {
     if (tagFind || tagNameToLowerCase === "default") {
       notatka.push(note);
       await Write();
-      // res.status(404).send("Notatka o taiej nazwie już istnieje");
     } else {
       tags.push(tag);
       notatka.push(note);
