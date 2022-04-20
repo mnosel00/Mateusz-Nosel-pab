@@ -31,6 +31,7 @@ interface Note {
 interface Login {
   login: string;
   password: string;
+  admin?: boolean;
   id?: number;
 
 }
@@ -74,15 +75,58 @@ async function Write(): Promise<void> {
 
 app.get("/users",auth,function (req:any, res) {
   
-  res.send(users.filter(x => x.login === req.user.login));
+  if (req.user.admin) {
+    res.send(users);
+  }else{
+    res.send(users.find(x => x.login === req.user.login));
+  }
+  
 });
+
+app.put("/edit/:id",auth,function (req:any, res) {
+
+  const {id} = req.params;
+  const ID = +id;
+  const login = req.body.login;
+  const password = req.body.password;
+
+
+
+  const userEdit = users.find(x => x.login === req.user.login)
+  if(userEdit!.admin)
+  {
+    
+    const log = users.find(y=> y.id===ID);
+    if(login&& password){
+      log!.login = login;
+      log!.password = password;
+    }
+    res.send(userEdit);
+
+  }
+  else
+  {
+    if (login && password) {
+      userEdit!.login = login;
+      userEdit!.password = password;
+    }
+    res.send(userEdit);
+  }
+
+
+ 
+})
+
+
 
 app.post("/login", async function (req, res) {
   const login = req.body.login;
   const password = req.body.password;
+  const admin = req.body.admin;
 
   let user:Login = {
     login:login,
+    admin:admin,
     password:password,
     id:Date.now()
   }
