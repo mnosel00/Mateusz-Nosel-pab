@@ -3,7 +3,7 @@ const SchemaStolik = mongooseStolik.Schema;
 
 
 
-let stolikSchema = new SchemaStolik(
+export let stolikSchema = new SchemaStolik(
   {
     nazwa: {
       type: String,
@@ -22,6 +22,8 @@ let stolikSchema = new SchemaStolik(
   },
   { timestamps: true }
 );
+
+
 
 const Stolik = mongooseStolik.model("Stolik",stolikSchema);
 module.exports = Stolik;

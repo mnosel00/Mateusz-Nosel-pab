@@ -1,11 +1,12 @@
 import { timeStamp } from "console";
+import {stolikSchema} from "./stolikSchema"
 
 const mongooseRezerwacja = require("mongoose");
 const SchemaRezerwacja = mongooseRezerwacja.Schema;
 
 let rezerwacjaSchema = new SchemaRezerwacja(
   {
-    stolik: String ,
+    stolik: [stolikSchema] ,
     start: {
       type: Date,
     },
