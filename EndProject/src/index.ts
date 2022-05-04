@@ -4,6 +4,8 @@ import bodyParser from "body-parser";
 import stolikiRoutes from "../routes/stoliki";
 import restauracjeRoutes from "../routes/restauracje"
 import pracownikRoutes from "../routes/pracownik"
+import danieRoutes from "../routes/danie"
+import rezerwacjaRoutes from "../routes/rezerwacja"
 
 const mongoose = require("mongoose");
 
@@ -23,6 +25,9 @@ app.use(bodyParser.json());
 app.use("/stoliki", stolikiRoutes);
 app.use("/restauracje", restauracjeRoutes);
 app.use("/pracownicy", pracownikRoutes);
+app.use("/dania", danieRoutes);
+app.use("/rezerwacje", rezerwacjaRoutes);
+
 
 
 app.get("/", function (req: Request, res: Response) {
