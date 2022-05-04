@@ -1,4 +1,4 @@
-const mongooseDanie = require("mongoose");
+const mongooseDanie = require('mongoose')
 const SchemaDanie = mongooseDanie.Schema;
 
 let danieSchema = new SchemaDanie(
