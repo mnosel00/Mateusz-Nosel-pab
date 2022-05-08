@@ -3,11 +3,11 @@ import { Request, Response } from "express";
 import bodyParser from "body-parser";
 import { appendFile } from "fs";
 
-const Stolik = require("../models/stolikSchema");
+const Produkt = require("../models/produktSchema");
 const router = express.Router();
 
 router.get("/", (req: Request, res: Response) => {
-  Stolik.find()
+  Produkt.find()
     .then((result: any) => {
       res.send(result);
     })
@@ -17,52 +17,53 @@ router.get("/", (req: Request, res: Response) => {
 });
 
 router.get("/getSingle/:id", (req: Request, res: Response) => {
-  Stolik.findById(req.params.id)
+  Produkt.findById(req.params.id)
     .then((result: any) => {
       res.send(result);
     })
     .catch((err: any) => {
-      res.send("Nie mamy stolika o takim id w bazie");
+      res.send("Takiego produktu nie mamy w magazynie");
     });
 });
 
 router.post("/addNew", (req: Request, res: Response) => {
-  let stolik = new Stolik({
+  let produkt = new Produkt({
     nazwa: req.body.nazwa,
-    iloscOsob: req.body.iloscOsob,
-    status: req.body.status,
+    cena: req.body.cena,
+    ilosc: req.body.ilosc,
+    jednostkaMiary: req.body.jednostkaMiary,
   });
 
-  stolik
+  produkt
     .save()
     .then((result: any) => {
       res.send(result);
     })
     .catch((error: any) => {
       res.send(
-        "Błędne dane stolika, proszę poprawić status oraz sprawdzić format wprowadzonych danych"
+        "Błędne dane produktu, proszę sprawdzić format wprowadzonych danych"
       );
     });
 });
 
 router.put("/updateSingle/:id", (req: Request, res: Response) => {
-  Stolik.findByIdAndUpdate(req.params.id, req.body, { new: true })
+  Produkt.findByIdAndUpdate(req.params.id, req.body, { new: true })
     .then((result: any) => {
       res.send(result);
     })
     .catch((error: any) => {
-      res.send("Nie mamy stolika o takim id w bazie");
+      res.send("Nie mamy produktu, o takim id w bazie");
     });
 });
 
 router.delete("/deleteSingle/:id", (req: Request, res: Response) => {
-  Stolik.findByIdAndRemove(req.params.id)
+  Produkt.findByIdAndRemove(req.params.id)
     .then((result: any) => {
       res.send(result);
     })
     .catch((err: any) => {
       res.send(
-        "stolika o takim id nie ma w bazie lub został wcześniej usunięty"
+        "Produtku o takim id nie ma w bazie lub został wcześniej usunięty"
       );
     });
 });

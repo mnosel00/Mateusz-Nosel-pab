@@ -6,6 +6,8 @@ import restauracjeRoutes from "../routes/restauracje"
 import pracownikRoutes from "../routes/pracownik"
 import danieRoutes from "../routes/danie"
 import rezerwacjaRoutes from "../routes/rezerwacja"
+import produktRoutes from "../routes/produkty"
+import zamowienieRoutes from "../routes/zamowienie"
 
 const mongoose = require("mongoose");
 
@@ -27,6 +29,8 @@ app.use("/restauracje", restauracjeRoutes);
 app.use("/pracownicy", pracownikRoutes);
 app.use("/dania", danieRoutes);
 app.use("/rezerwacje", rezerwacjaRoutes);
+app.use("/produkty", produktRoutes);
+app.use("/zamowienia", zamowienieRoutes);
 
 
 

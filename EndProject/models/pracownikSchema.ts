@@ -19,5 +19,5 @@ let pracownikSchema = new SchemaPracownik(
   { timestamps: true }
 );
 
-const Pracownik = mongoosePracownik.model('Pracownik',pracownikSchema);
+const Pracownik = mongoosePracownik.model("Pracownik", pracownikSchema);
 module.exports = Pracownik;

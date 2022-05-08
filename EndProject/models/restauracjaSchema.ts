@@ -31,5 +31,5 @@ let restauracjaSchema = new SchemaRestauracja(
   { timestamps: true }
 );
 
-const Restauracja = mongooseRestauracja.model("Restauracja",restauracjaSchema);
-module.exports = Restauracja
+const Restauracja = mongooseRestauracja.model("Restauracja", restauracjaSchema);
+module.exports = Restauracja;

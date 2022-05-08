@@ -1,8 +1,6 @@
 const mongooseStolik = require("mongoose");
 const SchemaStolik = mongooseStolik.Schema;
 
-
-
 export let stolikSchema = new SchemaStolik(
   {
     nazwa: {
@@ -15,15 +13,12 @@ export let stolikSchema = new SchemaStolik(
     },
     status: {
       type: String,
-      enum: ['Wolny', 'Zajety', 'Niedostepny'],
-      default: 'Wolny',
-      
+      enum: ["Wolny", "Zajety", "Niedostepny"],
+      default: "Wolny",
     },
   },
   { timestamps: true }
 );
 
-
-
-const Stolik = mongooseStolik.model("Stolik",stolikSchema);
+const Stolik = mongooseStolik.model("Stolik", stolikSchema);
 module.exports = Stolik;
