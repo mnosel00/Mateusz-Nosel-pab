@@ -16,6 +16,8 @@ router.get("/", (req: Request, res: Response) => {
     });
 });
 
+
+
 router.get("/getSingle/:id", (req: Request, res: Response) => {
   Zamowienie.findById(req.params.id)
     .then((result: any) => {
@@ -25,6 +27,16 @@ router.get("/getSingle/:id", (req: Request, res: Response) => {
       res.send("Nie mamy zamowienia o takim id w bazie");
     });
 });
+
+router.get("/oblozenieStolikow",(req: Request, res:Response)=>{
+
+  const result [{
+    $group:{
+      _id: "stolik._id",
+    }
+  }]
+
+})
 
 router.post("/addNew", (req: Request, res: Response) => {
   let zamowienie = new Zamowienie({

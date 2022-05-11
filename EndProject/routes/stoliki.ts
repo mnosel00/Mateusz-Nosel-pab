@@ -26,6 +26,18 @@ router.get("/getSingle/:id", (req: Request, res: Response) => {
     });
 });
 
+router.get("/wolneStoliki", (req: Request, res: Response) => {
+
+  const iloscOsob = req.body.miejsca;
+  Stolik.find({ status: "Wolny", iloscOsob:iloscOsob })
+    .then((result: any) => {
+      res.send(result);
+    })
+    .catch((err: any) => {
+      res.send("Nie mamy wolnych stolikow");
+    });
+});
+
 router.post("/addNew", (req: Request, res: Response) => {
   let stolik = new Stolik({
     nazwa: req.body.nazwa,
