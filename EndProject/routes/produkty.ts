@@ -41,7 +41,7 @@ router.post("/addNew", (req: Request, res: Response) => {
     })
     .catch((error: any) => {
       res.send(
-        "Błędne dane produktu, proszę sprawdzić format wprowadzonych danych"
+        "Błędne dane produktu, proszę sprawdzić format wprowadzonych danych" + error
       );
     });
 });

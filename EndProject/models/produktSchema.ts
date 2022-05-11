@@ -8,15 +8,15 @@ let produktSchema = new SchemaProdukt(
       required: true,
     },
     cena: {
-      type: String,
+      type: Number,
       required: true,
     },
     ilosc: {
       type: Number,
       required: true,
     },
-    jednostkaMiaru: {
-      type: Number,
+    jednostkaMiary: {
+      type: String,
       required: true,
     },
   },

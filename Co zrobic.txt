@@ -1,0 +1,1 @@
+Jeśli id stolika jest w rezerwacji zwróć błąd

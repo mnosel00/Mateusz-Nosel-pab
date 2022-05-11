@@ -5,17 +5,18 @@ let rezerwacjaSchema = new SchemaRezerwacja(
   {
     stolik: [
       {
-        type: SchemaRezerwacja.Types.ObjectArray,
+        type: SchemaRezerwacja.Types.ObjectId,
         ref: "Stolik",
       },
     ],
+    
     start: {
       type: Date,
-      required: true,
+      
     },
-    end: {
+    koniec: {
       type: Date,
-      required: true,
+      
     },
     klient: {
       type: String,

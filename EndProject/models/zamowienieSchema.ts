@@ -3,16 +3,16 @@ const SchemaZamowienie = mongooseZamowienie.Schema;
 
 let zamowienieSchema = new SchemaZamowienie(
   {
-    pracownik: [
+    pracownik:[
       {
-        type: SchemaZamowienie.Types.ObjectArray,
+        type: SchemaZamowienie.Types.ObjectId,
         ref: "Pracownik",
         required: true,
       },
-    ],
-    pozycje: [
+   ],
+    pozycje:[
       {
-        type: SchemaZamowienie.Types.ObjectArray,
+        type: SchemaZamowienie.Types.ObjectId,
         ref: "Danie",
         required: true,
       },
@@ -22,9 +22,9 @@ let zamowienieSchema = new SchemaZamowienie(
       enum: ["zlozone", "w realizacji", "zrealizowane", "rachunek"],
       required: true,
     },
-    stolik: [
+    stolik:[ 
       {
-        type: SchemaZamowienie.Types.ObjectArray,
+        type: SchemaZamowienie.Types.ObjectId,
         ref: "Stolik",
         required: true,
       },
