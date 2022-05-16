@@ -16,8 +16,6 @@ router.get("/", (req: Request, res: Response) => {
     });
 });
 
-
-
 router.get("/getSingle/:id", (req: Request, res: Response) => {
   Zamowienie.findById(req.params.id)
     .then((result: any) => {
@@ -28,15 +26,18 @@ router.get("/getSingle/:id", (req: Request, res: Response) => {
     });
 });
 
-router.get("/oblozenieStolikow",(req: Request, res:Response)=>{
-
-  const result [{
-    $group:{
-      _id: "stolik._id",
-    }
-  }]
-
-})
+router.get("/oblozenieStolikow", (req: Request, res: Response) => {
+  Zamowienie.aggregate([
+    {
+      $group: {
+        _id: "$stolik",
+        iloscZamowien: { $sum:1 },
+      },
+    },
+  ]).then((result: any) => {
+    res.send(result);
+  });
+});
 
 router.post("/addNew", (req: Request, res: Response) => {
   let zamowienie = new Zamowienie({
