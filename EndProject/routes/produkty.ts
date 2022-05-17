@@ -26,6 +26,14 @@ router.get("/getSingle/:id", (req: Request, res: Response) => {
     });
 });
 
+router.get("/sort",(req: Request, res: Response) =>{
+  Produkt.find()
+    .sort('cena')
+    .then((result: any) => {
+      res.send(result);
+    })
+})
+
 router.post("/addNew", (req: Request, res: Response) => {
   let produkt = new Produkt({
     nazwa: req.body.nazwa,

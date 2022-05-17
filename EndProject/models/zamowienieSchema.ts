@@ -12,7 +12,7 @@ let zamowienieSchema = new SchemaZamowienie(
    ],
     pozycje:[
       {
-        type: SchemaZamowienie.Types.ObjectId,
+        type: SchemaZamowienie.Types.Mixed,
         ref: "Danie",
         required: true,
       },
@@ -31,7 +31,8 @@ let zamowienieSchema = new SchemaZamowienie(
     ],
     kwota: {
       type: Number,
-      required: true,
+      default: 0,
+     
     },
   },
   { timestamps: true }
@@ -39,3 +40,4 @@ let zamowienieSchema = new SchemaZamowienie(
 
 const Zamowienie = mongooseZamowienie.model("Zamowienie", zamowienieSchema);
 module.exports = Zamowienie;
+

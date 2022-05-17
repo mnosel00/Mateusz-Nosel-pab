@@ -4,16 +4,26 @@ import bodyParser from "body-parser";
 import { appendFile } from "fs";
 
 const Zamowienie = require("../models/zamowienieSchema");
+const Danie = require("../models/danieSchema");
 const router = express.Router();
 
 router.get("/", (req: Request, res: Response) => {
-  Zamowienie.find()
-    .then((result: any) => {
-      res.send(result);
-    })
-    .catch((err: any) => {
-      console.log(err);
-    });
+  let a = Zamowienie.find({ kwota: 0 });
+ 
+    Zamowienie.aggregate([
+      {
+        $addFields: {
+          kwota: { $round: [{ $sum: "$pozycje.cena" }, 2] },
+        },
+      },
+    ])
+      .then((result: any) => {
+        res.send(result);
+      })
+      .catch((err: any) => {
+        console.log(err);
+      });
+  
 });
 
 router.get("/getSingle/:id", (req: Request, res: Response) => {
@@ -31,7 +41,7 @@ router.get("/oblozenieStolikow", (req: Request, res: Response) => {
     {
       $group: {
         _id: "$stolik",
-        iloscZamowien: { $sum:1 },
+        iloscZamowien: { $sum: 1 },
       },
     },
   ]).then((result: any) => {
