@@ -12,7 +12,7 @@ router.get("/", (req: Request, res: Response) => {
       res.send(result);
     })
     .catch((err: any) => {
-      console.log(err);
+      res.send(err);
     });
 });
 
@@ -32,6 +32,9 @@ router.get("/sort",(req: Request, res: Response) =>{
     .then((result: any) => {
       res.send(result);
     })
+    .catch((err: any) => {
+      res.send("Nie można posortować produktów"+err);
+    });
 })
 
 router.post("/addNew", (req: Request, res: Response) => {

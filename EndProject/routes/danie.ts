@@ -12,7 +12,7 @@ router.get("/", (req: Request, res: Response) => {
       res.send(result);
     })
     .catch((err: any) => {
-      console.log(err);
+      res.send(err);
     });
 });
 

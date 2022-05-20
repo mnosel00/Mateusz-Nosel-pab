@@ -21,7 +21,7 @@ router.get("/", (req: Request, res: Response) => {
         res.send(result);
       })
       .catch((err: any) => {
-        console.log(err);
+        res.send(err);
       });
   
 });
@@ -46,7 +46,9 @@ router.get("/oblozenieStolikow", (req: Request, res: Response) => {
     },
   ]).then((result: any) => {
     res.send(result);
-  });
+  }).catch((err: any) => {
+    res.send(err);
+  });;
 });
 
 router.post("/addNew", (req: Request, res: Response) => {
